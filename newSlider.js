@@ -1,126 +1,66 @@
-var xmlns = "http://www.w3.org/2000/svg",
-  select = function(s) {
-    return document.querySelector(s);
-  },
-  selectAll = function(s) {
-    return document.querySelectorAll(s);
-  },
-  container = select('.container'),
-  dragger = select('#dragger'),
-  dragVal,
-  maxDrag = 300
+const $ = (s, o = document) => o.querySelector(s);
 
+var interval;
 
-TweenMax.set('svg', {
-  visibility: 'visible'
-})
+let slider = $('.slider'),
+    input = $('input', slider),
+    random = (min, max) => min + Math.random() * (max - min),
+    between = (min, max, percent) =>  max - (max - min) * (1 - percent),
+    create = slider => {
 
-TweenMax.set('#upText', {
-  alpha: 0,
-  transformOrigin: '50% 50%'
-})
+        let percent = slider.handle.dataset.percent,
+            position = slider.handle.dataset.position,
+            div = document.createElement('div');
 
-TweenLite.defaultEase = Elastic.easeOut.config(0.4, 0.1);
+        div.classList.add('smoke');
+        slider.range.appendChild(div);
 
-var tl = new TimelineMax({
-  paused: true
+        gsap.set(div, {
+            x: position,
+            y: -20
+        });
+
+        gsap.timeline().to(div, {
+            scale: random(between(.15, 1, percent), between(.4, 2, percent)),
+            duration: between(.8, 1.2, percent)
+        }).to(div, {
+            scale: 0,
+            duration: between(.3, .5, percent)
+        });
+
+        gsap.to(div, {
+            duration: between(.3, .4, percent),
+            opacity: 1
+        });
+
+        gsap.to(div, {
+            duration: between(2, 3, percent),
+            y: random(between(-40, -200, percent), between(-70, -320, percent)),
+            x: random(between(-20, -90, percent), between(20, 90, percent)) + parseInt(position),
+            onComplete() {
+                div.remove();
+            }
+        });
+
+    };
+
+rangesliderJs.create(input, {
+    onInit(value) {
+        this.handle.dataset.value = value;
+    },
+    onSlideStart(value, percent, position) {
+        this.handle.classList.add('active');
+        interval = setInterval(() => {
+            create(this);
+        }, 50);
+    },
+    onSlide(value, percent, position) {
+        this.handle.dataset.value = value;
+        this.handle.dataset.percent = percent;
+        this.handle.dataset.position = position;
+    },
+    onSlideEnd() {
+        this.handle.classList.remove('active');
+        clearInterval(interval);
+    }
 });
-tl.addLabel("blobUp")
-  .to('#display', 1, {
-    attr: {
-      cy: '-=40',
-      r: 30
-    }
-  })
-  .to('#dragger', 1, {
-    attr: {
-      //cy:'-=2',
-      r: 8
-    }
-  }, '-=1')
-  .set('#dragger', {
-    strokeWidth: 4
-  }, '-=1')
-  .to('.downText', 1, {
-    //alpha:0,
-    alpha: 0,
-    transformOrigin: '50% 50%'
-  }, '-=1')
-  .to('.upText', 1, {
-    //alpha:1,
-    alpha: 1,
-    transformOrigin: '50% 50%'
-  }, '-=1')
-  .addPause()
-  .addLabel("blobDown")
-  .to('#display', 1, {
-    attr: {
-      cy: 299.5,
-      r: 0
-    },
-    ease: Expo.easeOut
-  })
-  .to('#dragger', 1, {
-    attr: {
-      //cy:'-=35',
-      r: 15
-    }
-  }, '-=1')
-  .set('#dragger', {
-    strokeWidth: 0
-  }, '-=1')
-  .to('.downText', 1, {
-    alpha: 1,
-    ease: Power4.easeOut
-  }, '-=1')
-  .to('.upText', 0.2, {
-    alpha: 0,
-    ease: Power4.easeOut,
-    attr: {
-      y: '+=45'
-    }
-  }, '-=1')
-
-Draggable.create(dragger, {
-  type: 'x',
-  cursor: 'pointer',
-  throwProps: true,
-  bounds: {
-    minX: 0,
-    maxX: maxDrag
-  },
-  onPress: function() {
-
-    tl.play('blobUp')
-  },
-  onRelease: function() {
-    tl.play('blobDown')
-  },
-  onDrag: dragUpdate,
-  onThrowUpdate: dragUpdate
-})
-
-function dragUpdate() {
-  dragVal = Math.round((this.target._gsTransform.x / maxDrag) * 9);
-  select('.downText').textContent = select('.upText').textContent = dragVal;
-  TweenMax.to('#display', 1.3, {
-    x: this.target._gsTransform.x
-
-  })
-
-  TweenMax.staggerTo(['.upText', '.downText'], 1, {
-    // x:this.target._gsTransform.x,
-    cycle: {
-      attr: [{
-        x: this.target._gsTransform.x + 146
-      }]
-    },
-    ease: Elastic.easeOut.config(1, 0.4)
-  }, '0.02')
-}
-
-TweenMax.to(dragger, 1, {
-  x: 150,
-  onUpdate: dragUpdate,
-  ease: Power1.easeInOut
-})
