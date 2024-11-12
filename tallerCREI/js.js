@@ -25,7 +25,7 @@ function init(){
   // Posicion camara 
   // position
 
-  // Agregar escena a camara 
+  // Agregar luz a escena 
 
   
   // Crear luz direccional
@@ -53,21 +53,21 @@ var loadOBJ = function(){
 var agregarObj3D = function(objeto){
 
   // Redimensionar objeto 
-  objeto.scale.set(5, 5, 5);
+  objeto.scale.set(1, 1, 1);
   objeto.position.set(0, 0, 0);
 
   // Sliders Rotaciones
-  document.getElementById("  ").oninput = function() {
+  document.getElementById("").oninput = function() {
     // rotation.
   };
 
   // Escalamiento Sliders
-  document.getElementById("   ").oninput = function() { 
+  document.getElementById("").oninput = function() { 
     // scale.
   };
 
   // Translación Sliders 
-  document.getElementById("   ").oninput = function() {
+  document.getElementById("").oninput = function() {
     // position.
   };
 
@@ -88,7 +88,7 @@ var agregarObj3D = function(objeto){
 // Funcion loop para renderizar en cada cambo 
 var render = function() {
   requestAnimationFrame(render);
-  renderer.render(scene, camera);
+  // renderer.render( nombreEscena, nombreCamara);
 };
 
 // Inicializar y renderizar
