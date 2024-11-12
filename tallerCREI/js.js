@@ -7,7 +7,7 @@ var height = window.innerHeight;
 
 // Función inicializar escena
 function init(){
-  // Mandar a llamar DIV del HTML
+  // Mandar a llamar Canvas del HTML
   // canvas = 
   gl = WebGLUtils.setupWebGL(canvas);
   
