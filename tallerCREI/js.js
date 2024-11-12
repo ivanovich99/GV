@@ -2,7 +2,7 @@
 // var
 
 // Dimensiones del canvas y tamaño de ventana
-var width = window.innerWidth
+var width = window.innerWidth;
 var height = window.innerHeight;
 
 // Función inicializar escena
